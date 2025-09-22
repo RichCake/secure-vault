@@ -12,7 +12,7 @@ const RootLayout = () => {
     const theme = Colors[colorScheme] ?? Colors.light
 
     return (
-        <GluestackUIProvider>
+        <GluestackUIProvider mode={colorScheme}>
             <SafeAreaProvider>
                 <StatusBar value="auto" />
                 <Stack screenOptions={{
@@ -31,5 +31,3 @@ const RootLayout = () => {
 }
 
 export default RootLayout
-
-const styles = StyleSheet.create({})

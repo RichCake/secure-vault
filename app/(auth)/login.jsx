@@ -18,6 +18,7 @@ import { VStack } from '@/components/ui/vstack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Heading } from '@/components/ui/heading';
 import { Center } from '@/components/ui/center';
+import { Box } from '@/components/ui/box';
 
 const Login = () => {
     const [isInvalid, setIsInvalid] = React.useState(false);

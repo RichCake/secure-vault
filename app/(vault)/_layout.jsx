@@ -13,8 +13,8 @@ const VaultLayout = () => {
             screenOptions={{
                 headerShown: false, tabBarStyle: {
                     backgroundColor: theme.navBackground,
-                    paddingTop: 10,
-                    height: 90,
+                    paddingTop: 5,
+                    height: 85,
                 },
                 tabBarActiveTintColor: theme.iconColorFocused,
                 tabBarInactiveTintColor: theme.iconColor,
