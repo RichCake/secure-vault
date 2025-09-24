@@ -1,5 +1,5 @@
 import { Keyboard, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import {
     FormControl,
@@ -19,11 +19,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Heading } from '@/components/ui/heading';
 import { Center } from '@/components/ui/center';
 import { Box } from '@/components/ui/box';
+import { useUser } from '../../hooks/useUser';
 
 const Login = () => {
-    const [isInvalid, setIsInvalid] = React.useState(false);
+    const [isInvalid, setIsInvalid] = useState(false);
     const [login, setLogin] = useState()
     const [password, setPassword] = useState()
+
+    const { user } = useUser()
 
     const handleSubmit = () => {
         if (!login || !password) {
@@ -31,6 +34,7 @@ const Login = () => {
         } else {
             setIsInvalid(false)
         }
+        console.log("current user", user)
         console.log("login form submitted", login, password)
     }
 
