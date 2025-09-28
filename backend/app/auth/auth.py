@@ -1,96 +1,45 @@
-import secrets
-import hashlib
-from datetime import datetime, timedelta
+from fastapi import HTTPException
+from passlib.context import CryptContext
 
-from app.auth import errors, repository
+from app.auth import repository
 
-
-def hash_password(password: str) -> str:
-    """Хеширует пароль с использованием SHA-256 и соли"""
-    salt = secrets.token_hex(16)
-    password_hash = hashlib.sha256((password + salt).encode()).hexdigest()
-    return f"{salt}:{password_hash}"
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-def verify_password(password: str, hashed_password: str) -> bool:
-    """Проверяет пароль против хеша"""
-    try:
-        salt, password_hash = hashed_password.split(":")
-        return hashlib.sha256((password + salt).encode()).hexdigest() == password_hash
-    except ValueError:
-        return False
+def get_password_hash(password: str) -> str:
+    return pwd_context.hash(password)
 
 
-def generate_session_id() -> str:
-    """Генерирует уникальный ID сессии"""
-    return secrets.token_urlsafe(32)
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
 
 
-async def check_and_create_user(username: str, password: str):
-    """Проверяет существование пользователя и создает нового с хешированным паролем"""
-    if await repository.user_exists(username):
-        raise errors.UserAlreadyExists()
-    
-    hashed_password = hash_password(password)
-    await repository.create_user(username, hashed_password)
+async def check_and_create_user(username, password):
+    user = await repository.get_user(username)
+    if user is not None:
+        raise HTTPException(status_code=400, detail="user already exists")
+    return await repository.create_user(username, get_password_hash(password))
 
 
-async def check_password(username: str, password: str) -> bool:
-    """Проверяет пароль пользователя"""
-    user = await repository.get_user_by_username(username)
-    if not user:
-        return False
-    
-    return verify_password(password, user.hash_password)
+async def login(username, password):
+    user = await repository.get_user(username)
+    if not user or not verify_password(password, user.hash_password):
+        raise HTTPException(status_code=400, detail="wrong username or password")
+    return await create_session(user)
 
 
-async def create_session(username: str) -> str:
-    """Создает новую сессию для пользователя"""
-    user = await repository.get_user_by_username(username)
-    if not user:
-        raise errors.UserNotFound()
-    
-    # Удаляем старые сессии пользователя
-    await repository.delete_user_sessions(user.id)
-    
-    # Создаем новую сессию
-    session_id = generate_session_id()
-    expires_at = datetime.utcnow() + timedelta(days=7)  # Сессия действует 7 дней
-    
-    await repository.create_session(session_id, user.id, expires_at)
-    return session_id
+async def create_session(user):
+    session = await repository.get_session(user)
+    if session:
+        return session.id
+    session = await repository.create_session(user)
+    return session.id
 
 
-async def delete_session(session_id: str):
-    """Удаляет сессию по ID"""
+async def delete_session(session_id):
+    pass
+
+
+async def check_session(session_id):
     if session_id:
-        await repository.delete_session(session_id)
-
-
-async def check_session(session_id: str) -> bool:
-    """Проверяет валидность сессии"""
-    if not session_id:
-        return False
-    
-    session = await repository.get_session(session_id)
-    if not session:
-        return False
-    
-    # Проверяем, не истекла ли сессия
-    if session.expires_at < datetime.utcnow():
-        await repository.delete_session(session_id)
-        return False
-    
-    return True
-
-
-async def get_user_from_session(session_id: str):
-    """Получает пользователя по ID сессии"""
-    if not session_id:
-        return None
-    
-    session = await repository.get_session(session_id)
-    if not session or session.expires_at < datetime.utcnow():
-        return None
-    
-    return session.user
+        return await repository.get_user_by_session(session_id)

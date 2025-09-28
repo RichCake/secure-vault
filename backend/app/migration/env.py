@@ -6,6 +6,11 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+import sys
+from os.path import dirname, abspath
+
+sys.path.insert(0, dirname(dirname(abspath(__file__))))
+
 from app.auth.models import Session, User
 from app.databese import DATABASE_URL, Base
 
