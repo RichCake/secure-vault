@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException, status
 
 from app.auth.dependencies import get_auth_user
 from app.auth.models import User
@@ -9,7 +9,9 @@ app = FastAPI(title="Vault API", version="1.0.0")
 
 @app.get("/me")
 async def get_me(user: User = Depends(get_auth_user)):
-    return {"user": user.username}
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    return {"username": user.username}
 
 
 app.include_router(auth_router)

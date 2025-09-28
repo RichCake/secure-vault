@@ -1,5 +1,6 @@
-import { Keyboard, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
-import { useState } from 'react'
+import { Keyboard, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View, Alert } from 'react-native'
+import { useState, useEffect } from 'react'
+import { router, Link } from 'expo-router'
 
 import {
     FormControl,
@@ -23,19 +24,47 @@ import { useUser } from '../../hooks/useUser';
 
 const Login = () => {
     const [isInvalid, setIsInvalid] = useState(false);
-    const [login, setLogin] = useState()
-    const [password, setPassword] = useState()
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
-    const { user } = useUser()
+    const { user, login, error, clearError } = useUser()
 
-    const handleSubmit = () => {
-        if (!login || !password) {
-            setIsInvalid(true)
-        } else {
-            setIsInvalid(false)
+    // Redirect if user is already logged in
+    useEffect(() => {
+        if (user) {
+            router.replace('/(vault)/files')
         }
-        console.log("current user", user)
-        console.log("login form submitted", login, password)
+    }, [user])
+
+    // Clear error when component mounts
+    useEffect(() => {
+        clearError()
+    }, [])
+
+    const handleSubmit = async () => {
+        if (!username || !password) {
+            setIsInvalid(true)
+            return
+        }
+
+        setIsInvalid(false)
+        setIsSubmitting(true)
+
+        try {
+            const result = await login(username, password)
+            
+            if (result.success) {
+                // Navigation will be handled by the useEffect above
+                console.log('Login successful:', result.user)
+            } else {
+                Alert.alert('Ошибка входа', result.error || 'Не удалось войти в систему')
+            }
+        } catch (err) {
+            Alert.alert('Ошибка', 'Произошла неожиданная ошибка')
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     return (
@@ -55,9 +84,11 @@ const Login = () => {
                         </FormControlLabel>
                         <Input className="my-1" size="xl">
                             <InputField
-                                placeholder="login"
-                                value={login}
-                                onChangeText={(text) => setLogin(text)}
+                                placeholder="username"
+                                value={username}
+                                onChangeText={(text) => setUsername(text)}
+                                autoCapitalize="none"
+                                autoCorrect={false}
                             />
                         </Input>
                         <FormControlHelper>
@@ -107,13 +138,26 @@ const Login = () => {
                         size="md"
                         variant="outline"
                         onPress={handleSubmit}
+                        isDisabled={isSubmitting}
                     >
-                        <ButtonText>Войти</ButtonText>
+                        {isSubmitting ? (
+                            <ButtonSpinner />
+                        ) : (
+                            <ButtonText>Войти</ButtonText>
+                        )}
                     </Button>
                 </VStack>
+                <Link href="/(auth)/register" style={styles.link}>Зарегистрироваться</Link>
             </SafeAreaView>
         </TouchableWithoutFeedback>
     )
 }
+
+const styles = StyleSheet.create({
+    link: {
+        borderBottomWidth: 1,
+        marginTop: 20,
+    },
+})
 
 export default Login

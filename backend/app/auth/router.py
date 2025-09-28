@@ -20,7 +20,7 @@ async def register(response: Response, user: UserCredentials):
         value=session_id,
         expires=dt.datetime.now(dt.timezone.utc) + dt.timedelta(days=365),
     )
-    return {"success": True}
+    return {"username": user.username}
 
 
 @router.post("/login")
@@ -31,7 +31,7 @@ async def session_login(response: Response, user: UserCredentials):
         value=session_id,
         expires=dt.datetime.now(dt.timezone.utc) + dt.timedelta(days=365),
     )
-    return {"success": True}
+    return {"username": user.username}
 
 
 @router.post("/logout")

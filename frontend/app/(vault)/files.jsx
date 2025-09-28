@@ -1,5 +1,7 @@
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useEffect } from 'react'
+import { router } from 'expo-router'
 
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Box } from '@/components/ui/box';
@@ -7,6 +9,7 @@ import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Heading } from '@/components/ui/heading';
+import { Spinner } from '@/components/ui/spinner';
 import {
     Menu,
     MenuItem,
@@ -14,6 +17,7 @@ import {
     MenuSeparator,
 } from '@/components/ui/menu';
 import { Button, ButtonText } from '@/components/ui/button';
+import { useUser } from '../../hooks/useUser';
 
 const TEST_DATA = {
     id: 'root',
@@ -79,6 +83,30 @@ const Item = ({ name, type, size }) => (
 )
 
 const Files = () => {
+    const { user, loading } = useUser()
+
+    // Redirect to login if not authenticated
+    useEffect(() => {
+        if (!loading && !user) {
+            router.replace('/(auth)/login')
+        }
+    }, [user, loading])
+
+    // Show loading while checking authentication
+    if (loading) {
+        return (
+            <SafeAreaView className="flex-1 bg-white justify-center items-center">
+                <Spinner size="large" color="grey" />
+                <Text className="mt-4">Загрузка...</Text>
+            </SafeAreaView>
+        )
+    }
+
+    // Don't render if not authenticated (will redirect)
+    if (!user) {
+        return null
+    }
+
     return (
         <SafeAreaView className="flex-1 bg-white">
             <VStack className="px-4">
