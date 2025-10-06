@@ -4,7 +4,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
 from app.auth.models import Session, User
-from app.databese import async_session_maker
+from app.database import async_session_maker
 
 
 async def get_user(username) -> User | None:

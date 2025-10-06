@@ -1,8 +1,8 @@
 // API Configuration
 export const API_CONFIG = {
     // Change this to your actual backend URL
-    BASE_URL: 'http://192.168.178.22:8000',
-    
+    BASE_URL: 'http://10.201.245.194:8000',
+
     // API endpoints
     ENDPOINTS: {
         AUTH: {

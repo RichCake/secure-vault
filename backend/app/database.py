@@ -1,8 +1,9 @@
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, Any
 from uuid import UUID, uuid4
 
 from sqlalchemy import func
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, declared_attr, mapped_column
 
@@ -20,6 +21,8 @@ class Base(AsyncAttrs, DeclarativeBase):
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     created_at: Mapped[created_at]
+
+    type_annotation_map = {dict[str, Any]: JSONB}
 
     @declared_attr.directive
     def __tablename__(cls) -> str:

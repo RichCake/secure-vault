@@ -5,7 +5,7 @@ from uuid import UUID
 from sqlalchemy import ForeignKey, String, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-from app.databese import Base
+from app.database import Base
 
 
 class User(Base):
@@ -13,6 +13,10 @@ class User(Base):
     hash_password: Mapped[str]
 
     sessions: Mapped[list["Session"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+
+    nodes: Mapped[list["Node"]] = relationship(  # noqa: F821
         back_populates="user", cascade="all, delete-orphan"
     )
 

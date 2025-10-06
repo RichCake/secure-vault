@@ -17,6 +17,8 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
+MEDIA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "media")
+
 
 def get_db_url():
     return (
