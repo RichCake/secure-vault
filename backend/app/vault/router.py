@@ -19,7 +19,6 @@ from app.auth import errors
 from app.auth.dependencies import get_auth_user
 from app.auth.models import User
 from app.auth.schemas import UserCredentials
-from app.database import get_async_session
 from app.vault import repository, schemas
 
 router = APIRouter(prefix="/vault", tags=["Vault"])

@@ -10,11 +10,14 @@ from app.database import Base
 
 class Node(Base):
     owner_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
-    parent_id: Mapped[UUID] = mapped_column(ForeignKey("nodes.id"))
+    parent_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("nodes.id"))
     name_encrypted: Mapped[str]
     storage_path: Mapped[str]
     meta: Mapped[dict[str, Any]]
     hash: Mapped[str]
 
     owner: Mapped["User"] = relationship(back_populates="nodes")  # noqa: F821
-    parent: Mapped["Node"] = relationship(back_populates="children")
+    parent: Mapped[Optional["Node"]] = relationship(
+        back_populates="children", remote_side="Node.id"
+    )
+    children: Mapped[list["Node"]] = relationship(back_populates="parent")

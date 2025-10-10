@@ -17,7 +17,7 @@ class User(Base):
     )
 
     nodes: Mapped[list["Node"]] = relationship(  # noqa: F821
-        back_populates="user", cascade="all, delete-orphan"
+        back_populates="owner", cascade="all, delete-orphan"
     )
 
 

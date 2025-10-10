@@ -11,7 +11,8 @@ class NodeBase(BaseModel):
 
 
 class NodeCreate(NodeBase):
-    parent_id: uuid.UUID | None = None
+    pass
+    # parent_id: uuid.UUID | None = None
 
 
 class NodeUpdate(NodeBase):
