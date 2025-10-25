@@ -9,8 +9,8 @@ from app.vault.models import Node
 from app.vault.schemas import NodeCreate, NodeUpdate
 
 
-async def create_node(node_in: NodeCreate, owner: User, storage_path: str) -> Node:
-    node = Node(**node_in.model_dump(), owner_id=owner.id, storage_path=storage_path)
+async def create_node(node_in: dict, owner: User, storage_path: str) -> Node:
+    node = Node(**node_in, owner_id=owner.id, storage_path=storage_path)
     async with async_session_maker() as session:
         session.add(node)
         await session.commit()

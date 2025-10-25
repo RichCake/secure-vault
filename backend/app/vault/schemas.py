@@ -6,13 +6,11 @@ from pydantic import BaseModel
 
 class NodeBase(BaseModel):
     name_encrypted: str
-    meta: dict
     hash: str
 
 
 class NodeCreate(NodeBase):
-    pass
-    # parent_id: uuid.UUID | None = None
+    parent_id: uuid.UUID | None = None
 
 
 class NodeUpdate(NodeBase):

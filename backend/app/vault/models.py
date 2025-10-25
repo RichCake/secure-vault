@@ -13,7 +13,6 @@ class Node(Base):
     parent_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("nodes.id"))
     name_encrypted: Mapped[str]
     storage_path: Mapped[str]
-    meta: Mapped[dict[str, Any]]
     hash: Mapped[str]
 
     owner: Mapped["User"] = relationship(back_populates="nodes")  # noqa: F821

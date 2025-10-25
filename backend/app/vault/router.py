@@ -31,14 +31,14 @@ BUCKET_NAME = "secure-vault"
 @router.post("/upload", response_model=schemas.Node)
 async def upload_file(
     file: UploadFile,
-    meta: str = Form(),
     user: User = Depends(get_auth_user),
 ):
     file_id = uuid.uuid4()
     s3.upload_fileobj(file.file, BUCKET_NAME, str(file_id))
-    node_in = schemas.NodeCreate.model_validate_json(meta)
     node = await repository.create_node(
-        node_in=node_in, owner=user, storage_path=str(file_id)
+        node_in={"name_encrypted": file.filename, "hash": "TODO"},
+        owner=user,
+        storage_path=str(file_id),
     )
     return node
 
