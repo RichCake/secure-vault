@@ -1,28 +1,49 @@
 import uuid
 from datetime import datetime
+from typing import Any, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class NodeBase(BaseModel):
-    name_encrypted: str
-    hash: str
-
-
-class NodeCreate(NodeBase):
+    name: str = Field(min_length=1, max_length=512)
     parent_id: uuid.UUID | None = None
 
 
-class NodeUpdate(NodeBase):
+class FolderCreate(NodeBase):
     pass
+
+
+class NodeUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=1, max_length=512)
+    parent_id: uuid.UUID | None = None
+    meta: dict[str, Any] | None = None
 
 
 class Node(NodeBase):
     id: uuid.UUID
     owner_id: uuid.UUID
-    parent_id: uuid.UUID | None
-    storage_path: str
+    is_folder: bool
+    owner_username: str
+    storage_path: str | None
+    size: int | None
+    mime_type: str | None
+    meta: dict[str, Any] | None
     created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class ShareRequest(BaseModel):
+    target_username: str
+    permission: Literal["read", "write"] = "read"
+
+
+class ShareEntry(BaseModel):
+    user_id: uuid.UUID
+    username: str
+    permission: Literal["read", "write"]
 
     class Config:
         from_attributes = True
