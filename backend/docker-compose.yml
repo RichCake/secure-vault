@@ -9,7 +9,7 @@ services:
       ports:
         - 5432:5432
       volumes:
-        - pgdbdata:/var/lib/postgresql/data/
+        - pgdbdata:/var/lib/postgresql
       restart: on-failure
 
 volumes:
