@@ -91,7 +91,7 @@ export default function Profile() {
                         <AvatarBadge />
                     </Avatar>
                     <Heading className="mt-4 text-center">{user.username || 'User'}</Heading>
-                    <Text className="text-gray-500 text-center">{user.email || user.username}</Text>
+                    {/* <Text className="text-gray-500 text-center">{user.email || user.username}</Text> */}
                 </Center>
 
                 <VStack className="flex-1 justify-center space-y-4">
@@ -112,7 +112,7 @@ export default function Profile() {
                             <HStack className="items-center">
                                 <Ionicons name="shield-outline" size={24} color="black" />
                                 <VStack className="ml-3">
-                                    <Text className="text-base font-medium">Безопасность и конфиденциальность</Text>
+                                    <Text className="text-base font-medium">Безопасность</Text>
                                 </VStack>
                             </HStack>
                             <Ionicons name="chevron-forward" size={20} color="gray" />

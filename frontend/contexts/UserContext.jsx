@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from "react"
 import { API_CONFIG, getApiUrl } from "../config/api"
+import { setOnUnauthorized } from "../services/vaultService"
 
 export const UserContext = createContext()
 
@@ -8,9 +9,13 @@ export function UserProvider({ children }) {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
 
-    // Check if user is already logged in on app start
     useEffect(() => {
-        // Add a small delay to ensure app is fully loaded
+        setOnUnauthorized(() => {
+            setUser(null)
+        })
+    }, [])
+
+    useEffect(() => {
         const timer = setTimeout(() => {
             checkAuthStatus()
         }, 1000)
@@ -26,7 +31,7 @@ export function UserProvider({ children }) {
             
             const response = await fetch(url, {
                 method: 'GET',
-                credentials: 'include', // This ensures cookies are sent
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -62,7 +67,7 @@ export function UserProvider({ children }) {
 
             const response = await fetch(url, {
                 method: 'POST',
-                credentials: 'include', // This ensures cookies are sent and received
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -103,7 +108,7 @@ export function UserProvider({ children }) {
 
             const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.AUTH.REGISTER), {
                 method: 'POST',
-                credentials: 'include', // This ensures cookies are sent and received
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -138,7 +143,7 @@ export function UserProvider({ children }) {
 
             const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.AUTH.LOGOUT), {
                 method: 'POST',
-                credentials: 'include', // This ensures cookies are sent
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -180,5 +185,3 @@ export function UserProvider({ children }) {
         </UserContext.Provider>
     );
 }
-
-// Wrap the UserProvider component around the root layout stack

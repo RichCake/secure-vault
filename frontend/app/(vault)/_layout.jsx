@@ -26,8 +26,13 @@ const VaultLayout = () => {
                 )
             }} />
             <Tabs.Screen name='shares' options={{
-                title: "Общий доступ ", tabBarIcon: ({ focused }) => (
+                title: "Общий доступ", tabBarIcon: ({ focused }) => (
                     <Ionicons size={24} name={focused ? "person-add" : "person-add-outline"} color={focused ? theme.iconColorFocused : theme.iconColor}></Ionicons>
+                )
+            }} />
+            <Tabs.Screen name='notifications' options={{
+                title: "Уведомления", tabBarIcon: ({ focused }) => (
+                    <Ionicons size={24} name={focused ? "notifications" : "notifications-outline"} color={focused ? theme.iconColorFocused : theme.iconColor}></Ionicons>
                 )
             }} />
             <Tabs.Screen name='profile' options={{
