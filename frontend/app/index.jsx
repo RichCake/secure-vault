@@ -40,13 +40,11 @@ const Home = () => {
             <Spacer height={10} />
             <ThemedText title={true} style={styles.title}>Хранилище документов</ThemedText>
             <Spacer height={10} />
-            <ThemedText style={{ textAlign: "center" }}>Надежное хранилище со сквозным шифрованием файлов</ThemedText>
+            <ThemedText style={{ textAlign: "center" }}>Удобное облачное хранилище для ваших файлов</ThemedText>
             <Spacer />
             <Link href="/(auth)/login" style={styles.link}><ThemedText>Вход</ThemedText></Link>
             <Spacer height={10} />
             <Link href="/(auth)/register" style={styles.link}><ThemedText>Создать аккаунт</ThemedText></Link>
-            <Spacer height={10} />
-            <Link href="/test-connection" style={styles.link}><ThemedText>Тест подключения</ThemedText></Link>
         </ThemedView>
     )
 }

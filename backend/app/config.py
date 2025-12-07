@@ -10,6 +10,11 @@ class Settings(BaseSettings):
     PG_USER: str
     PG_PASSWORD: str
     SECRET_KEY: str
+    S3_BUCKET_NAME: str
+    S3_ENDPOINT_URL: str | None = None
+    S3_REGION: str | None = None
+    S3_ACCESS_KEY: str | None = None
+    S3_SECRET_KEY: str | None = None
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
     )
