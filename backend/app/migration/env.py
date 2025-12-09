@@ -13,6 +13,7 @@ sys.path.insert(0, dirname(dirname(abspath(__file__))))
 from app.auth.models import Session, User
 from app.database import DATABASE_URL, Base
 from app.vault.models import Node
+from app.notifications.models import Notification
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

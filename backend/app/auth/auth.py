@@ -21,23 +21,20 @@ async def check_and_create_user(username, password):
     return await repository.create_user(username, get_password_hash(password))
 
 
-async def login(username, password):
+async def login(username, password, user_agent: str | None = None, ip_address: str | None = None):
     user = await repository.get_user(username)
     if not user or not verify_password(password, user.hash_password):
         raise HTTPException(status_code=400, detail="wrong username or password")
-    return await create_session(user)
+    return await create_session(user, user_agent, ip_address)
 
 
-async def create_session(user):
-    session = await repository.get_session(user)
-    if session:
-        return session.id
-    session = await repository.create_session(user)
+async def create_session(user, user_agent: str | None = None, ip_address: str | None = None):
+    session = await repository.create_session(user, user_agent, ip_address)
     return session.id
 
 
 async def delete_session(session_id):
-    pass
+    return await repository.delete_session(session_id)
 
 
 async def check_session(session_id):

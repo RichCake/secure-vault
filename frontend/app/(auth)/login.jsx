@@ -91,11 +91,6 @@ const Login = () => {
                                 autoCorrect={false}
                             />
                         </Input>
-                        <FormControlHelper>
-                            <FormControlHelperText>
-                                Ваш логин.
-                            </FormControlHelperText>
-                        </FormControlHelper>
                         <FormControlError>
                             <FormControlErrorIcon as={AlertCircleIcon} className="text-red-500" />
                             <FormControlErrorText className="text-red-500">

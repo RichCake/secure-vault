@@ -24,5 +24,8 @@ class User(Base):
 class Session(Base):
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
     expires_at: Mapped[datetime] = mapped_column()
+    user_agent: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    ip_address: Mapped[str | None] = mapped_column(String(45), nullable=True)
+    last_active_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
     user: Mapped["User"] = relationship(back_populates="sessions")

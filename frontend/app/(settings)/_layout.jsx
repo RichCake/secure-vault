@@ -12,14 +12,14 @@ export default function SettingsLayout() {
             <Stack
                 screenOptions={{
                     headerShown: true,
-                    animation: "none",
+                    animation: "default",
                     headerStyle: { backgroundColor: theme.navBackground },
                     headerTintColor: theme.title,
                 }}
 
             >
                 <Stack.Screen name="account" options={{ title: "Аккаунт и пароль" }} />
-                <Stack.Screen name="security" options={{ title: "Безопасность и конфиденциальность" }} />
+                <Stack.Screen name="security" options={{ title: "Безопасность" }} />
             </Stack>
         </>
     )
