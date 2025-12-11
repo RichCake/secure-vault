@@ -1,4 +1,5 @@
 import os
+import urllib.parse
 import uuid
 
 from fastapi import (
@@ -13,9 +14,9 @@ from fastapi import (
 )
 from fastapi.responses import RedirectResponse
 
+from app.auth import repository as auth_repository
 from app.auth.dependencies import get_auth_user
 from app.auth.models import User
-from app.auth import repository as auth_repository
 from app.config import settings
 from app.vault import repository, schemas
 from app.vault.service import S3StorageService
@@ -43,7 +44,9 @@ async def _get_file_size(upload: UploadFile) -> int:
 async def _ensure_owner(node_id: uuid.UUID, user: User):
     node = await repository.get_node_by_id(node_id)
     if not node or node.owner_id != user.id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
+        )
     return node
 
 
@@ -56,7 +59,9 @@ async def _ensure_parent_access(parent_id: uuid.UUID | None, user: User):
     if not parent.is_folder:
         raise HTTPException(status_code=400, detail="Parent must be a folder")
     if parent.owner_id != user.id:
-        raise HTTPException(status_code=403, detail="No permission for the parent folder")
+        raise HTTPException(
+            status_code=403, detail="No permission for the parent folder"
+        )
     return parent
 
 
@@ -68,7 +73,9 @@ async def _ensure_no_cycles(node_id: uuid.UUID, new_parent_id: uuid.UUID | None)
     current = await repository.get_node_by_id(new_parent_id)
     while current:
         if current.id == node_id:
-            raise HTTPException(status_code=400, detail="Cannot move into own descendant")
+            raise HTTPException(
+                status_code=400, detail="Cannot move into own descendant"
+            )
         if current.parent_id is None:
             break
         current = await repository.get_node_by_id(current.parent_id)
@@ -92,7 +99,7 @@ async def upload_file(
 
     node = await repository.create_node(
         owner=user,
-        name=file.filename,
+        name=urllib.parse.unquote(file.filename),
         is_folder=False,
         parent_id=parent_id,
         storage_path=storage_key,
@@ -103,8 +110,12 @@ async def upload_file(
     return node
 
 
-@router.post("/folders", response_model=schemas.Node, status_code=status.HTTP_201_CREATED)
-async def create_folder(folder_in: schemas.FolderCreate, user: User = Depends(get_auth_user)):
+@router.post(
+    "/folders", response_model=schemas.Node, status_code=status.HTTP_201_CREATED
+)
+async def create_folder(
+    folder_in: schemas.FolderCreate, user: User = Depends(get_auth_user)
+):
     await _ensure_parent_access(folder_in.parent_id, user)
     node = await repository.create_node(
         owner=user,
@@ -124,7 +135,9 @@ async def get_files(
     shared: bool | None = Query(default=None),
     user: User = Depends(get_auth_user),
 ):
-    return await repository.list_nodes_for_user(user.id, parent_id, shared_filter=shared)
+    return await repository.list_nodes_for_user(
+        user.id, parent_id, shared_filter=shared
+    )
 
 
 @router.get("/files/{file_id}", response_model=schemas.Node)
@@ -145,7 +158,9 @@ async def download_file(file_id: uuid.UUID, user: User = Depends(get_auth_user))
 
 
 @router.get("/search", response_model=list[schemas.Node])
-async def search_nodes(q: str = Query(min_length=1), user: User = Depends(get_auth_user)):
+async def search_nodes(
+    q: str = Query(min_length=1), user: User = Depends(get_auth_user)
+):
     return await repository.search_nodes(user.id, q)
 
 
@@ -242,7 +257,9 @@ async def list_access(file_id: uuid.UUID, user: User = Depends(get_auth_user)):
     ]
 
 
-@router.delete("/files/{file_id}/share/{target_user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/files/{file_id}/share/{target_user_id}", status_code=status.HTTP_204_NO_CONTENT
+)
 async def revoke_share(
     file_id: uuid.UUID,
     target_user_id: uuid.UUID,

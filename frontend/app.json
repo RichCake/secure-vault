@@ -14,18 +14,39 @@
             "backgroundColor": "#ffffff"
         },
         "ios": {
-            "supportsTablet": true
+            "supportsTablet": true,
+            "bundleIdentifier": "richcake-securevault"
         },
         "android": {
             "adaptiveIcon": {
                 "foregroundImage": "./assets/img/vault.png",
                 "backgroundColor": "#ffffff"
             },
-            "edgeToEdgeEnabled": true
+            "edgeToEdgeEnabled": true,
+            "package": "com.richcake.securevault",
+            "usesCleartextTraffic": true
         },
         "web": {
             "bundler": "metro",
             "favicon": "./assets/img/vault.png"
-        }
+        },
+        "extra": {
+            "eas": {
+                "projectId": "31857379-437c-4f34-bce4-87586c68ea2e"
+            }
+        },
+        "owner": "richcake",
+        "plugins": [
+            "expo-router",
+            "expo-font",
+            [
+                "expo-build-properties",
+                {
+                    "android": {
+                        "usesCleartextTraffic": true
+                    }
+                }
+            ]
+        ]
     }
 }

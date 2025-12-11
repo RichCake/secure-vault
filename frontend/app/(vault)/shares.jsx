@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { FlatList, RefreshControl, View, Alert, TouchableOpacity } from 'react-native'
+import { FlatList, RefreshControl, View, Alert, TouchableOpacity, ScrollView } from 'react-native'
 import { router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import * as Sharing from 'expo-sharing'
@@ -194,28 +194,59 @@ const Shares = () => {
 
                 {/* Loading */}
                 {loading && !refreshing && (
-                    <View className="flex-1 justify-center items-center">
+                    <ScrollView
+                        className="flex-1"
+                        contentContainerStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={handleRefresh}
+                            />
+                        }
+                    >
                         <Spinner size="large" color="grey" />
-                    </View>
+                    </ScrollView>
                 )}
 
                 {/* Error */}
                 {!loading && error && (
-                    <EmptyState
-                        icon="alert-circle-outline"
-                        title="Ошибка"
-                        description={error}
-                        iconColor="#EF4444"
-                    />
+                    <ScrollView
+                        className="flex-1"
+                        contentContainerStyle={{ flex: 1 }}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={handleRefresh}
+                            />
+                        }
+                    >
+                        <EmptyState
+                            icon="alert-circle-outline"
+                            title="Ошибка"
+                            description={error}
+                            iconColor="#EF4444"
+                        />
+                    </ScrollView>
                 )}
 
                 {/* Empty state */}
                 {!loading && !error && sharedFiles.length === 0 && (
-                    <EmptyState
-                        icon="share-social-outline"
-                        title="Нет доступных файлов"
-                        description="Когда кто-то поделится с вами файлом, он появится здесь"
-                    />
+                    <ScrollView
+                        className="flex-1"
+                        contentContainerStyle={{ flex: 1 }}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={handleRefresh}
+                            />
+                        }
+                    >
+                        <EmptyState
+                            icon="share-social-outline"
+                            title="Нет доступных файлов"
+                            description="Когда кто-то поделится с вами файлом, он появится здесь"
+                        />
+                    </ScrollView>
                 )}
 
                 {/* File list */}

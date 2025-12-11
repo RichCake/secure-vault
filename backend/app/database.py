@@ -10,7 +10,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, declared_attr, mapped_column
 from app.config import get_db_url
 
 DATABASE_URL = get_db_url()
-engine = create_async_engine(DATABASE_URL)
+engine = create_async_engine(DATABASE_URL, echo=True)
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
 created_at = Annotated[datetime, mapped_column(server_default=func.now())]

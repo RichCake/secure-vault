@@ -48,7 +48,9 @@ async def get_node_by_id(node_id: UUID) -> Node | None:
 
 async def get_node_for_user(node_id: UUID, user_id: UUID) -> Node | None:
     shared = (
-        select(FileAccess.node_id).where(FileAccess.user_id == user_id).scalar_subquery()
+        select(FileAccess.node_id)
+        .where(FileAccess.user_id == user_id)
+        .scalar_subquery()
     )
     async with async_session_maker() as session:
         stmt = (
@@ -69,12 +71,16 @@ async def list_nodes_for_user(
     shared_filter: bool | None = None,
 ) -> list[Node]:
     shared_subq = (
-        select(FileAccess.node_id).where(FileAccess.user_id == user_id).scalar_subquery()
+        select(FileAccess.node_id)
+        .where(FileAccess.user_id == user_id)
+        .scalar_subquery()
     )
     async with async_session_maker() as session:
         if shared_filter is True:
-            stmt = select(Node).options(joinedload(Node.owner)).where(
-                (Node.id.in_(shared_subq)) & (Node.owner_id != user_id)
+            stmt = (
+                select(Node)
+                .options(joinedload(Node.owner))
+                .where((Node.id.in_(shared_subq)) & (Node.owner_id != user_id))
             )
         elif shared_filter is False:
             stmt = (
@@ -89,10 +95,11 @@ async def list_nodes_for_user(
                 .where(or_(Node.owner_id == user_id, Node.id.in_(shared_subq)))
             )
 
-        if parent_id is None:
-            stmt = stmt.where(Node.parent_id.is_(None))
-        else:
-            stmt = stmt.where(Node.parent_id == parent_id)
+        if not shared_filter:
+            if parent_id is None:
+                stmt = stmt.where(Node.parent_id.is_(None))
+            else:
+                stmt = stmt.where(Node.parent_id == parent_id)
 
         stmt = stmt.order_by(Node.is_folder.desc(), Node.name.asc())
         result = await session.execute(stmt)
@@ -101,7 +108,7 @@ async def list_nodes_for_user(
 
 async def update_node(node_id: UUID, node_in: NodeUpdate) -> Node | None:
     async with async_session_maker() as session:
-        stmt = select(Node).where(Node.id == node_id)
+        stmt = select(Node).options(joinedload(Node.owner)).where(Node.id == node_id)
         result = await session.execute(stmt)
         node = result.scalar_one_or_none()
         if not node:
@@ -157,7 +164,9 @@ async def delete_node(node_id: UUID) -> bool:
 async def search_nodes(user_id: UUID, query: str) -> list[Node]:
     like_expr = f"%{query}%"
     shared = (
-        select(FileAccess.node_id).where(FileAccess.user_id == user_id).scalar_subquery()
+        select(FileAccess.node_id)
+        .where(FileAccess.user_id == user_id)
+        .scalar_subquery()
     )
     async with async_session_maker() as session:
         stmt = (
