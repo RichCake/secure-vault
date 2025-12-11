@@ -34,21 +34,18 @@ const Home = () => {
         )
     }
 
-    // Show login/register options for unauthenticated users
     return (
-        <SafeAreaView>
-            <ThemedView style={styles.container}>
-                <ThemedLogo source={Logo} />
-                <Spacer height={10} />
-                <ThemedText title={true} style={styles.title}>Хранилище документов</ThemedText>
-                <Spacer height={10} />
-                <ThemedText style={{ textAlign: "center" }}>Удобное облачное хранилище для ваших файлов</ThemedText>
-                <Spacer />
-                <Link href="/(auth)/login" style={styles.link}><ThemedText>Вход</ThemedText></Link>
-                <Spacer height={10} />
-                <Link href="/(auth)/register" style={styles.link}><ThemedText>Создать аккаунт</ThemedText></Link>
-            </ThemedView>
-        </SafeAreaView>
+        <ThemedView style={styles.container}>
+            <ThemedLogo source={Logo} />
+            <Spacer height={10} />
+            <ThemedText title={true} style={styles.title}>Хранилище документов</ThemedText>
+            <Spacer height={10} />
+            <ThemedText style={{ textAlign: "center" }}>Удобное облачное хранилище для ваших файлов</ThemedText>
+            <Spacer />
+            <Link href="/(auth)/login" style={styles.link}><ThemedText>Вход</ThemedText></Link>
+            <Spacer height={10} />
+            <Link href="/(auth)/register" style={styles.link}><ThemedText>Создать аккаунт</ThemedText></Link>
+        </ThemedView>
     )
 }
 
