@@ -55,4 +55,4 @@ npx expo start
 
 ## Окружение
 
-- Доступ к backend API ()
+- Доступ к backend API ([backend/README.md](../backend/README.md))
