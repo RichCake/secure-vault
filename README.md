@@ -13,5 +13,5 @@
 
 Инструкцию по запуску, описание архитектры и др смотрите в:
 
-- backend/README.md
-- frontend/README.md
+- [backend/README.md](./backend/README.md)
+- [frontend/README.md](./frontend/README.md)
