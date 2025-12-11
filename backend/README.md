@@ -85,3 +85,6 @@ uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 ## Модель данных
 
+<img width="2340" height="1482" alt="Untitled" src="https://github.com/user-attachments/assets/a795234b-2eac-4c4a-b7dd-c3d540b37e63" />
+
+
