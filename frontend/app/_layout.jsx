@@ -1,6 +1,6 @@
-import { StyleSheet, Text, useColorScheme, View } from 'react-native'
+import { useColorScheme } from 'react-native'
 import React from 'react'
-import { Slot, Stack } from 'expo-router'
+import { Stack } from 'expo-router'
 import { Colors } from "../constants/Colors"
 import { StatusBar } from 'expo-status-bar'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
@@ -18,7 +18,7 @@ const RootLayout = () => {
             <NotificationProvider>
                 <GluestackUIProvider mode={colorScheme}>
                     <SafeAreaProvider>
-                        <StatusBar value="auto" />
+                        <StatusBar style="auto" />
                         <Stack screenOptions={{
                             headerStyle: { backgroundColor: theme.navBackground },
                             headerTintColor: theme.title,

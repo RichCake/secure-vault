@@ -81,6 +81,26 @@ async def _ensure_no_cycles(node_id: uuid.UUID, new_parent_id: uuid.UUID | None)
         current = await repository.get_node_by_id(current.parent_id)
 
 
+async def _ensure_can_write(node_id: uuid.UUID, user: User):
+    """Ensure user is owner or has write permission for the node."""
+    node = await repository.get_node_by_id(node_id)
+    if not node:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
+        )
+    # Owner can always write
+    if node.owner_id == user.id:
+        return node
+    # Check if user has write permission
+    permission = await repository.get_user_permission(node_id, user.id)
+    if permission != "write":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No write permission for this file",
+        )
+    return node
+
+
 @router.post("/upload", response_model=schemas.Node)
 async def upload_file(
     file: UploadFile,
@@ -170,7 +190,13 @@ async def update_file(
     node_in: schemas.NodeUpdate,
     user: User = Depends(get_auth_user),
 ):
-    node = await _ensure_owner(file_id, user)
+    node = await _ensure_can_write(file_id, user)
+    # Only owner can move files to another folder
+    if node_in.parent_id is not None and node.owner_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only owner can move files",
+        )
     await _ensure_parent_access(node_in.parent_id, user)
     await _ensure_no_cycles(node.id, node_in.parent_id)
     updated_node = await repository.update_node(file_id, node_in)
@@ -183,7 +209,7 @@ async def update_file_content(
     file: UploadFile,
     user: User = Depends(get_auth_user),
 ):
-    node = await _ensure_owner(file_id, user)
+    node = await _ensure_can_write(file_id, user)
     if node.is_folder:
         raise HTTPException(status_code=400, detail="Cannot upload content to a folder")
     if not node.storage_path:
@@ -245,7 +271,7 @@ async def share_file(
     response_model=list[schemas.ShareEntry],
 )
 async def list_access(file_id: uuid.UUID, user: User = Depends(get_auth_user)):
-    node = await _ensure_owner(file_id, user)
+    node = await repository.get_node_by_id(file_id)
     entries = await repository.list_access_entries(node.id)
     return [
         schemas.ShareEntry(
@@ -255,6 +281,30 @@ async def list_access(file_id: uuid.UUID, user: User = Depends(get_auth_user)):
         )
         for entry in entries
     ]
+
+
+@router.patch(
+    "/files/{file_id}/share/{target_user_id}",
+    response_model=schemas.ShareEntry,
+)
+async def update_share(
+    file_id: uuid.UUID,
+    target_user_id: uuid.UUID,
+    share_in: schemas.ShareUpdate,
+    user: User = Depends(get_auth_user),
+):
+    """Update permission for an existing share."""
+    await _ensure_owner(file_id, user)
+    access = await repository.update_access_permission(
+        file_id, target_user_id, share_in.permission
+    )
+    if not access:
+        raise HTTPException(status_code=404, detail="Share not found")
+    return schemas.ShareEntry(
+        user_id=access.user_id,
+        username=access.user.username if access.user else "",
+        permission=access.permission,
+    )
 
 
 @router.delete(

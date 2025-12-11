@@ -1,12 +1,14 @@
-import { View, Text, useColorScheme } from 'react-native'
+import { useColorScheme } from 'react-native'
 import React from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { Tabs } from 'expo-router'
 import { Colors } from '../../constants/Colors'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const VaultLayout = () => {
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
+    const insets = useSafeAreaInsets()
 
     return (
         <Tabs
@@ -14,7 +16,8 @@ const VaultLayout = () => {
                 headerShown: false, tabBarStyle: {
                     backgroundColor: theme.navBackground,
                     paddingTop: 5,
-                    height: 85,
+                    paddingBottom: insets.bottom,
+                    height: 60 + insets.bottom,
                 },
                 tabBarActiveTintColor: theme.iconColorFocused,
                 tabBarInactiveTintColor: theme.iconColor,

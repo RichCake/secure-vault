@@ -40,6 +40,10 @@ class ShareRequest(BaseModel):
     permission: Literal["read", "write"] = "read"
 
 
+class ShareUpdate(BaseModel):
+    permission: Literal["read", "write"]
+
+
 class ShareEntry(BaseModel):
     user_id: uuid.UUID
     username: str

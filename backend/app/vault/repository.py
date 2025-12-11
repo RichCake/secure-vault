@@ -223,3 +223,33 @@ async def list_access_entries(node_id: UUID) -> list[FileAccess]:
         )
         result = await session.execute(stmt)
         return result.scalars().all()
+
+
+async def get_user_permission(node_id: UUID, user_id: UUID) -> str | None:
+    """Get user's permission for a node. Returns 'read', 'write', or None."""
+    async with async_session_maker() as session:
+        stmt = select(FileAccess.permission).where(
+            (FileAccess.node_id == node_id) & (FileAccess.user_id == user_id)
+        )
+        result = await session.execute(stmt)
+        return result.scalar_one_or_none()
+
+
+async def update_access_permission(
+    node_id: UUID, user_id: UUID, permission: str
+) -> FileAccess | None:
+    """Update permission for an existing share."""
+    async with async_session_maker() as session:
+        stmt = (
+            select(FileAccess)
+            .options(joinedload(FileAccess.user))
+            .where((FileAccess.node_id == node_id) & (FileAccess.user_id == user_id))
+        )
+        result = await session.execute(stmt)
+        access = result.scalar_one_or_none()
+        if not access:
+            return None
+        access.permission = permission
+        await session.commit()
+        await session.refresh(access)
+        return access
